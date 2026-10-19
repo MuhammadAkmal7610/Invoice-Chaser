@@ -2,6 +2,12 @@
 
 Settle is a Next.js App Router dashboard for tracking invoices, configuring dunning workflows, syncing billing data, and collecting payments through public Stripe Checkout pages.
 
+## Demo walkthrough
+
+Run `npm install` and then `npm run dev`, then open `http://localhost:3000`. The landing page links to a seeded dashboard with sample invoices. **Product preview** demonstrates example Starter, Pro, and Agency plans, a trial, usage meters, ROI/recovery metrics, payment installments, reply detection, white-label pages, team roles, multi-currency reporting, a failed-send queue, and guided onboarding. These are illustrative demo features; they do not create subscription charges or send client messages. See [ARCHITECTURE.md](ARCHITECTURE.md) for the implementation boundary and [HELP.md](HELP.md) for the walkthrough.
+
+Run the automated checks with `npm test`; run the production build with `npm run build`.
+
 ## Local setup
 
 1. Install dependencies with `npm install`.

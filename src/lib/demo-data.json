@@ -1,0 +1,43 @@
+{
+  "invoices": [
+    {
+      "id": "demo-invoice-001",
+      "client_name": "Northstar Studio",
+      "client_email": "billing@example.com",
+      "amount_cents": 240000,
+      "currency": "usd",
+      "due_date": "2026-10-10",
+      "status": "open",
+      "paused": false,
+      "pay_token": "demo-payment-disabled",
+      "current_step": 1,
+      "paid_at": null
+    },
+    {
+      "id": "demo-invoice-002",
+      "client_name": "Juniper Works",
+      "client_email": "accounts@example.com",
+      "amount_cents": 87500,
+      "currency": "usd",
+      "due_date": "2026-10-18",
+      "status": "open",
+      "paused": false,
+      "pay_token": "demo-payment-disabled",
+      "current_step": 0,
+      "paid_at": null
+    },
+    {
+      "id": "demo-invoice-003",
+      "client_name": "Harbor & Pine",
+      "client_email": "finance@example.com",
+      "amount_cents": 132500,
+      "currency": "usd",
+      "due_date": "2026-10-01",
+      "status": "paid",
+      "paused": false,
+      "pay_token": "demo-payment-disabled",
+      "current_step": 2,
+      "paid_at": "2026-10-08T12:00:00.000Z"
+    }
+  ]
+}
