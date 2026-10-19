@@ -8,6 +8,8 @@ Run `npm install` and then `npm run dev`, then open `http://localhost:3000`. The
 
 Run the automated checks with `npm test`; run the production build with `npm run build`.
 
+The dashboard support chat uses the Responses API when the server-only `OPENAI_API_KEY` is set. Configure `OPENAI_MODEL` and `SUPPORT_EMAIL` as needed. Without the key, common setup questions use concise responses based on the local support guide. The chat reads only the signed-in user's workspace under RLS and is read-only. Never expose the OpenAI key to client code.
+
 ## Local setup
 
 1. Install dependencies with `npm install`.

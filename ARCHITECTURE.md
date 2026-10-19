@@ -5,6 +5,7 @@ Settle is a Next.js App Router application. Server components read workspace dat
 ## Main paths
 
 - `src/app/` contains the public landing page, login, dashboard, workflow editor, integrations, public payment page, and Stripe endpoints.
+- `src/app/api/support/chat/route.ts` builds a read-only account context and applies the support policy before calling the OpenAI Responses API. `src/lib/support-docs.md` is the support assistant's documentation source.
 - `src/lib/supabase/` creates browser and server Supabase clients. Admin access is server-only and reserved for public payment lookups and verified webhooks.
 - `src/lib/integrations.ts` contains encrypted provider credential handling and invoice sync.
 - `supabase/migrations/` defines the tenant schema, RLS policies, and workflow persistence.

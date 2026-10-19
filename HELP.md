@@ -17,4 +17,8 @@ Follow the local setup and environment variable instructions in `README.md`. App
 - **No reminders are sent:** deploy `supabase/functions/daily-dunning` and set its Resend/Twilio secrets and `APP_URL`.
 - **Uptime check:** request `GET /api/health`; it returns a JSON `status` field.
 
+## Support chat
+
+The signed-in dashboard includes Settle's AI support assistant. It uses `src/lib/support-docs.md` and read-only details from the current signed-in workspace. Configure `OPENAI_API_KEY` on the server to enable AI-generated replies; `OPENAI_MODEL` and `SUPPORT_EMAIL` can override the defaults. Without an AI key, the assistant answers common documented setup questions using built-in replies. It never makes account changes or sends client messages. In demo mode it only receives the bundled demo invoices.
+
 For help, contact `hello@settle.app`.

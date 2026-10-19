@@ -11,5 +11,5 @@ export default async function Dashboard() {
     if (error) throw new Error(`Could not load invoices: ${error.message}`);
     invoices = data ?? [];
   }
-  return <DashboardView initialInvoices={invoices} demo={!sb} addInvoiceAction={addInvoice} setPausedAction={setPaused} />;
+  return <DashboardView initialInvoices={invoices} demo={!sb} addInvoiceAction={addInvoice} setPausedAction={setPaused} supportEmail={process.env.SUPPORT_EMAIL || "hello@settle.app"} />;
 }
