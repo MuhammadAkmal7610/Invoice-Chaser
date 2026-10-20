@@ -22,6 +22,12 @@ The dashboard support chat uses the Responses API when the server-only `OPENAI_A
 
 To test Stripe webhooks locally, run `stripe listen --forward-to localhost:3000/api/webhooks/stripe` and copy its signing secret to `STRIPE_WEBHOOK_SECRET`.
 
+## SaaS operations
+
+Apply all SQL files in `supabase/migrations` in order. To enable the operator console, create a normal Supabase Auth account, then run the commented `platform_admins` insert at the end of `003_saas_controls.sql` with that account's email. Visit `/admin` while signed in as that operator to see workspaces, invoice totals, audit events, and change account status. Workspace billing is at `/dashboard/billing`.
+
+For live subscriptions, create Stripe recurring prices and set `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO`, and `STRIPE_PRICE_AGENCY` to their price IDs. Configure a webhook for checkout session completion and subscription updated/deleted events at `/api/webhooks/stripe`, and set `STRIPE_WEBHOOK_SECRET`. Existing invoice payment events continue to use the same endpoint. The billing portal requires enabling Stripe's customer portal and a stored Stripe customer ID; subscription checkout creation and attaching a new customer to a workspace remain an onboarding step to implement before accepting public subscriptions.
+
 ## Implemented
 
 - Supabase Auth OAuth and organization-scoped data guarded by row-level security.

@@ -25,3 +25,12 @@ export const supabaseAdmin = () => {
   if (!url || !serviceRoleKey) return null;
   return createAdmin(url, serviceRoleKey);
 };
+
+export async function currentPlatformAdmin() {
+  const sb = await supabaseServer();
+  if (!sb) return { sb: null, user: null, isAdmin: false };
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return { sb, user: null, isAdmin: false };
+  const { data } = await sb.from("platform_admins").select("user_id").eq("user_id", user.id).maybeSingle();
+  return { sb, user, isAdmin: Boolean(data) };
+}

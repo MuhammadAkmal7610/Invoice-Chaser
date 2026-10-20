@@ -21,6 +21,27 @@ export async function POST(req: Request) {
   if (!supabase) return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
     const session = event.data.object as Stripe.Checkout.Session;
+    if (session.mode === "subscription" && session.customer && typeof session.customer === "string" && typeof session.subscription === "string") {
+      const subscription = await new Stripe(secret).subscriptions.retrieve(session.subscription);
+      const priceId = subscription.items.data[0]?.price.id;
+      const plans: Record<string, "starter" | "pro" | "agency"> = {
+        [process.env.STRIPE_PRICE_STARTER || "__missing_starter__"]: "starter",
+        [process.env.STRIPE_PRICE_PRO || "__missing_pro__"]: "pro",
+        [process.env.STRIPE_PRICE_AGENCY || "__missing_agency__"]: "agency",
+      };
+      const plan = priceId ? plans[priceId] : undefined;
+      if (!plan) return NextResponse.json({ received: true, ignored: true });
+      const status = subscription.status === "active" || subscription.status === "trialing" ? "active" : subscription.status === "past_due" || subscription.status === "unpaid" ? "past_due" : "suspended";
+      const { error } = await supabase.rpc("sync_workspace_subscription", {
+        p_customer_id: session.customer, p_subscription_id: subscription.id, p_plan: plan,
+        p_status: status, p_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      });
+      if (error) {
+        console.error(`Could not sync workspace subscription ${subscription.id}: ${error.message}`);
+        return NextResponse.json({ error: "Could not record subscription." }, { status: 500 });
+      }
+      return NextResponse.json({ received: true });
+    }
     const id = session.metadata?.invoice_id;
     if (id && session.payment_status === "paid") {
       if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
@@ -51,6 +72,27 @@ export async function POST(req: Request) {
       if (error) {
         console.error(`Could not mark invoice ${id} paid: ${error.message}`);
         return NextResponse.json({ error: "Could not record payment." }, { status: 500 });
+      }
+    }
+  }
+  if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object as Stripe.Subscription;
+    const priceId = subscription.items.data[0]?.price.id;
+    const plans: Record<string, "starter" | "pro" | "agency"> = {
+      [process.env.STRIPE_PRICE_STARTER || "__missing_starter__"]: "starter",
+      [process.env.STRIPE_PRICE_PRO || "__missing_pro__"]: "pro",
+      [process.env.STRIPE_PRICE_AGENCY || "__missing_agency__"]: "agency",
+    };
+    const plan = priceId ? plans[priceId] : undefined;
+    if (plan && typeof subscription.customer === "string") {
+      const status = event.type === "customer.subscription.deleted" ? "suspended" : subscription.status === "active" || subscription.status === "trialing" ? "active" : subscription.status === "past_due" || subscription.status === "unpaid" ? "past_due" : "suspended";
+      const { error } = await supabase.rpc("sync_workspace_subscription", {
+        p_customer_id: subscription.customer, p_subscription_id: subscription.id, p_plan: plan,
+        p_status: status, p_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      });
+      if (error) {
+        console.error(`Could not sync workspace subscription ${subscription.id}: ${error.message}`);
+        return NextResponse.json({ error: "Could not record subscription." }, { status: 500 });
       }
     }
   }

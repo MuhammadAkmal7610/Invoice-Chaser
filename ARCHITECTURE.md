@@ -9,6 +9,7 @@ Settle is a Next.js App Router application. Server components read workspace dat
 - `src/lib/supabase/` creates browser and server Supabase clients. Admin access is server-only and reserved for public payment lookups and verified webhooks.
 - `src/lib/integrations.ts` contains encrypted provider credential handling and invoice sync.
 - `supabase/migrations/` defines the tenant schema, RLS policies, and workflow persistence.
+- `src/app/admin/` is the platform operator console. Access requires a row in `platform_admins`; state changes use server-only service-role access and are recorded in `platform_audit_log`. Workspace subscription state lives on `organizations` and is synchronized by verified Stripe webhooks.
 - `supabase/functions/daily-dunning/` selects due reminder steps and sends email/SMS through Resend and Twilio.
 - `src/lib/demo-data.json` seeds the no-credentials walkthrough. Product Studio metrics and plan examples are illustrative and are not live billing records.
 
@@ -18,6 +19,6 @@ An invoice has an unguessable `pay_token`. Its public page creates a Stripe Chec
 
 ## Operational boundaries
 
-The product preview includes illustrative subscription prices, trial state, MRR, churn, usage, payment installments, reply detection, branding, and delivery retries. These screens do not create charges, send messages, pause live sequences, or persist settings. Production subscription billing, inbound reply webhooks, installment schedules, custom-domain provisioning, error tracking, and live queue retry controls need provider-backed implementations before launch.
+The product preview includes illustrative subscription prices, trial state, MRR, churn, usage, payment installments, reply detection, branding, and delivery retries. These screens do not create charges or send messages. Workspace status, plan, renewal date, billing portal, and platform admin status controls use persisted data. Stripe price IDs and webhook setup are required; public subscription checkout/customer onboarding, inbound reply webhooks, installment schedules, custom-domain provisioning, error tracking, and live queue retry controls need provider-backed implementations before launch.
 
 `GET /api/health` is a lightweight uptime probe. Configure an external uptime monitor against that URL. CI runs unit and static regression checks plus the production build. The RLS test checks migrations for required tenant guards; it is not a substitute for a live two-tenant Supabase integration test.
